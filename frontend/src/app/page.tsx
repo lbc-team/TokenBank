@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseEther, formatEther, encodeFunctionData } from 'viem';
 import { TOKEN_ABI, TOKEN_BANK_ABI } from '@/constants/abis';
-import { CONTRACTS, CONTRACTS_DELEGATE } from '@/constants/addresses';
+import { CONTRACTS } from '@/constants/addresses';
 
 const EXPLORER_URL = 'https://sepolia.etherscan.io/tx/';
 
@@ -64,7 +64,7 @@ export default function TokenBank7702() {
     address: CONTRACTS.MyToken as AddressType,
     abi: TOKEN_ABI,
     functionName: 'allowance',
-    args: address ? [address, CONTRACTS_DELEGATE.Delegate as AddressType] : undefined,
+    args: address ? [address, CONTRACTS.Delegate as AddressType] : undefined,
   });
 
   const hasDelegateAllowance = delegateAllowance && delegateAllowance > BigInt(0);
@@ -97,7 +97,7 @@ export default function TokenBank7702() {
       address: CONTRACTS.MyToken as AddressType,
       abi: TOKEN_ABI,
       functionName: 'approve',
-      args: [CONTRACTS_DELEGATE.Delegate as AddressType, parseEther('1000000')], // Large approval
+      args: [CONTRACTS.Delegate as AddressType, parseEther('1000000')], // Large approval
     });
   };
 
@@ -111,7 +111,7 @@ export default function TokenBank7702() {
     // 2. approve TokenBank
     // 3. call depositFor to credit user's balance
     executeBatch({
-      address: CONTRACTS_DELEGATE.Delegate as AddressType,
+      address: CONTRACTS.Delegate as AddressType,
       abi: [
         {
           type: 'function',
