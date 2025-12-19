@@ -72,7 +72,6 @@ cp .env.example .env
 
 编辑 `.env` 文件：
 ```
-PRIVATE_KEY=你的私钥
 SEPOLIA_RPC_URL=你的Sepolia RPC URL
 ```
 
