@@ -12,20 +12,12 @@
 
 ## 快速开始
 
-### 前端
-
 ```bash
-cd frontend
-npm install
-npm run dev
-```
+# 前端
+cd frontend && npm install && npm run dev
 
-### 合约
-
-```bash
-cd contracts
-forge build
-forge test
+# 合约
+cd contracts && forge build
 ```
 
 ## 已部署合约 (Sepolia)
@@ -33,22 +25,53 @@ forge test
 - MyTokenV2: `0x2023Bb8d3e166fcA393BB1D1229E74f5D47939e0`
 - TokenBankV2: `0x2219d42014E190D0C4349A6A189f4d11bc92669B`
 
-## 项目结构
+---
 
+## 如何替换为你自己的合约
+
+### 步骤 1: 部署合约
+
+```bash
+cd contracts
+cp .env.example .env
+# 编辑 .env 填入 PRIVATE_KEY 和 SEPOLIA_RPC_URL
+
+forge build
+forge script script/DeployV2.s.sol --rpc-url $SEPOLIA_RPC_URL --broadcast --legacy
 ```
-TokenBank/
-├── contracts/
-│   ├── src/
-│   │   ├── MyTokenV2.sol
-│   │   └── TokenBankV2.sol
-│   └── script/DeployV2.s.sol
-└── frontend/
-    └── src/app/tokenbank-v2/
+
+记录输出的合约地址。
+
+### 步骤 2: 导出 ABI
+
+```bash
+cat out/MyTokenV2.sol/MyTokenV2.json | jq '.abi' > ../frontend/src/constants/MyTokenV2.abi.json
+cat out/TokenBankV2.sol/TokenBankV2.json | jq '.abi' > ../frontend/src/constants/TokenBankV2.abi.json
 ```
+
+### 步骤 3: 更新前端
+
+编辑 `frontend/src/constants/addresses.ts`:
+```typescript
+export const CONTRACTS = {
+  MyTokenV2: '0x你的地址',
+  TokenBankV2: '0x你的地址',
+} as const;
+```
+
+编辑 `frontend/src/constants/abis.ts` 导入新的 ABI。
+
+### 步骤 4: 测试
+
+```bash
+cd frontend && npm run dev
+```
+
+访问 http://localhost:3000 测试功能。
+
+---
 
 ## 核心改进
-
-### V1 vs V2
 
 **V1 (两步)**:
 1. approve(bank, amount)
@@ -59,7 +82,9 @@ TokenBank/
 token.transferWithCallback(bank, amount, data)
 ```
 
-TokenBank 自动通过 `onTokenReceived` 回调接收代币并记录余额。
+TokenBank 通过 `onTokenReceived` 回调自动记录余额。
+
+---
 
 ## 技术栈
 
