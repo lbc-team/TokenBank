@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseEther, formatEther } from 'viem';
 import { TOKEN_V2_ABI, TOKEN_BANK_V2_ABI } from '@/constants/abis';
-import { CONTRACTS_V2 } from '@/constants/addresses';
+import { CONTRACTS } from '@/constants/addresses';
 
 const EXPLORER_URL = 'https://sepolia.etherscan.io/tx/';
 
@@ -18,7 +18,7 @@ export default function TokenBankV2() {
 
   // Read token balance
   const { data: tokenBalance, refetch: refetchTokenBalance } = useReadContract({
-    address: CONTRACTS_V2.MyTokenV2 as AddressType,
+    address: CONTRACTS.MyTokenV2 as AddressType,
     abi: TOKEN_V2_ABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
@@ -26,7 +26,7 @@ export default function TokenBankV2() {
 
   // Read bank balance
   const { data: bankBalance, refetch: refetchBankBalance } = useReadContract({
-    address: CONTRACTS_V2.TokenBankV2 as AddressType,
+    address: CONTRACTS.TokenBankV2 as AddressType,
     abi: TOKEN_BANK_V2_ABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
@@ -34,15 +34,15 @@ export default function TokenBankV2() {
 
   // Read allowance
   const { data: allowance, refetch: refetchAllowance } = useReadContract({
-    address: CONTRACTS_V2.MyTokenV2 as AddressType,
+    address: CONTRACTS.MyTokenV2 as AddressType,
     abi: TOKEN_V2_ABI,
     functionName: 'allowance',
-    args: address ? [address, CONTRACTS_V2.TokenBankV2 as AddressType] : undefined,
+    args: address ? [address, CONTRACTS.TokenBankV2 as AddressType] : undefined,
   });
 
   // Read token symbol
   const { data: tokenSymbol } = useReadContract({
-    address: CONTRACTS_V2.MyTokenV2 as AddressType,
+    address: CONTRACTS.MyTokenV2 as AddressType,
     abi: TOKEN_V2_ABI,
     functionName: 'symbol',
     args: [],
@@ -92,17 +92,17 @@ export default function TokenBankV2() {
   const handleApprove = () => {
     if (!depositAmount) return;
     approve({
-      address: CONTRACTS_V2.MyTokenV2 as AddressType,
+      address: CONTRACTS.MyTokenV2 as AddressType,
       abi: TOKEN_V2_ABI,
       functionName: 'approve',
-      args: [CONTRACTS_V2.TokenBankV2 as AddressType, parseEther(depositAmount)],
+      args: [CONTRACTS.TokenBankV2 as AddressType, parseEther(depositAmount)],
     });
   };
 
   const handleDeposit = () => {
     if (!depositAmount) return;
     deposit({
-      address: CONTRACTS_V2.TokenBankV2 as AddressType,
+      address: CONTRACTS.TokenBankV2 as AddressType,
       abi: TOKEN_BANK_V2_ABI,
       functionName: 'deposit',
       args: [parseEther(depositAmount)],
@@ -112,17 +112,17 @@ export default function TokenBankV2() {
   const handleDirectDeposit = () => {
     if (!directDepositAmount) return;
     directDeposit({
-      address: CONTRACTS_V2.MyTokenV2 as AddressType,
+      address: CONTRACTS.MyTokenV2 as AddressType,
       abi: TOKEN_V2_ABI,
       functionName: 'transferWithCallback',
-      args: [CONTRACTS_V2.TokenBankV2 as AddressType, parseEther(directDepositAmount)],
+      args: [CONTRACTS.TokenBankV2 as AddressType, parseEther(directDepositAmount)],
     });
   };
 
   const handleWithdraw = () => {
     if (!withdrawAmount) return;
     withdraw({
-      address: CONTRACTS_V2.TokenBankV2 as AddressType,
+      address: CONTRACTS.TokenBankV2 as AddressType,
       abi: TOKEN_BANK_V2_ABI,
       functionName: 'withdraw',
       args: [parseEther(withdrawAmount)],
