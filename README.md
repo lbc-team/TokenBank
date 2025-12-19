@@ -44,20 +44,111 @@ TokenBank/
 │   │   └── TokenBank.sol
 │   └── script/Deploy.s.sol
 └── frontend/
-    └── src/app/tokenbank-v1/
+    └── src/app/page.tsx
 ```
 
-## 使用流程
+---
 
-1. 连接钱包
-2. Approve TokenBank
-3. Deposit 代币
-4. Withdraw 代币
+## 如何替换为你自己的合约
+
+### 步骤 1: 修改并部署合约
+
+#### 1.1 修改合约代码（可选）
+
+编辑 `contracts/src/MyToken.sol`:
+```solidity
+// 修改代币名称和符号
+constructor(uint256 initialSupply) ERC20("YourToken", "YTK") {
+    _mint(msg.sender, initialSupply);
+}
+```
+
+#### 1.2 配置环境变量
+
+```bash
+cd contracts
+cp .env.example .env
+```
+
+编辑 `.env` 文件：
+```
+PRIVATE_KEY=你的私钥
+SEPOLIA_RPC_URL=你的Sepolia RPC URL
+```
+
+#### 1.3 编译并部署
+
+```bash
+forge build
+forge script script/Deploy.s.sol --rpc-url $SEPOLIA_RPC_URL --broadcast --legacy
+```
+
+**记录输出的合约地址**：
+```
+MyToken deployed to: 0x你的MyToken地址
+TokenBank deployed to: 0x你的TokenBank地址
+```
+
+---
+
+### 步骤 2: 导出合约 ABI
+
+```bash
+# 在 contracts 目录下
+cat out/MyToken.sol/MyToken.json | jq '.abi' > ../frontend/src/constants/MyToken.abi.json
+cat out/TokenBank.sol/TokenBank.json | jq '.abi' > ../frontend/src/constants/TokenBank.abi.json
+```
+
+---
+
+### 步骤 3: 更新前端配置
+
+#### 3.1 更新合约地址
+
+编辑 `frontend/src/constants/addresses.ts`:
+
+```typescript
+export const CONTRACTS = {
+  MyToken: '0x你的MyToken地址',
+  TokenBank: '0x你的TokenBank地址',
+} as const;
+```
+
+#### 3.2 更新 ABI
+
+编辑 `frontend/src/constants/abis.ts`，导入新的 ABI 文件。
+
+---
+
+### 步骤 4: 测试
+
+```bash
+cd frontend
+npm run dev
+```
+
+1. 访问 http://localhost:3000
+2. 连接钱包测试功能
+
+---
+
+## 替换检查清单
+
+- [ ] 修改合约代码（如需要）
+- [ ] 配置 .env 文件
+- [ ] 编译并部署合约
+- [ ] 记录合约地址
+- [ ] 导出 ABI
+- [ ] 更新 addresses.ts
+- [ ] 更新 abis.ts
+- [ ] 测试功能
+
+---
 
 ## 技术栈
 
-**合约**: Solidity 0.8.20, Foundry, OpenZeppelin
-**前端**: Next.js 16, TypeScript, Wagmi, RainbowKit, Tailwind CSS
+**合约**: Solidity 0.8.20, Foundry, OpenZeppelin  
+**前端**: Next.js 16, TypeScript, Wagmi, RainbowKit
 
 ## License
 
