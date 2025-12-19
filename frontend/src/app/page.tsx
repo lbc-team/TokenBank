@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useSignTypedData } from 'wagmi';
 import { parseEther, formatEther } from 'viem';
 import { TOKEN_PERMIT_ABI, TOKEN_BANK_PERMIT_ABI } from '@/constants/abis';
-import { CONTRACTS_PERMIT } from '@/constants/addresses';
+import { CONTRACTS } from '@/constants/addresses';
 
 const EXPLORER_URL = 'https://sepolia.etherscan.io/tx/';
 
@@ -23,7 +23,7 @@ export default function TokenBankEIP712() {
 
   // Read token balance
   const { data: tokenBalance, refetch: refetchTokenBalance } = useReadContract({
-    address: CONTRACTS_PERMIT.MyTokenPermit as AddressType,
+    address: CONTRACTS.MyTokenPermit as AddressType,
     abi: TOKEN_PERMIT_ABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
@@ -31,7 +31,7 @@ export default function TokenBankEIP712() {
 
   // Read bank balance
   const { data: bankBalance, refetch: refetchBankBalance } = useReadContract({
-    address: CONTRACTS_PERMIT.TokenBankPermit as AddressType,
+    address: CONTRACTS.TokenBankPermit as AddressType,
     abi: TOKEN_BANK_PERMIT_ABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
@@ -39,15 +39,15 @@ export default function TokenBankEIP712() {
 
   // Read allowance
   const { data: allowance, refetch: refetchAllowance } = useReadContract({
-    address: CONTRACTS_PERMIT.MyTokenPermit as AddressType,
+    address: CONTRACTS.MyTokenPermit as AddressType,
     abi: TOKEN_PERMIT_ABI,
     functionName: 'allowance',
-    args: address ? [address, CONTRACTS_PERMIT.TokenBankPermit as AddressType] : undefined,
+    args: address ? [address, CONTRACTS.TokenBankPermit as AddressType] : undefined,
   });
 
   // Read nonce for permit
   const { data: nonce } = useReadContract({
-    address: CONTRACTS_PERMIT.MyTokenPermit as AddressType,
+    address: CONTRACTS.MyTokenPermit as AddressType,
     abi: TOKEN_PERMIT_ABI,
     functionName: 'nonces',
     args: address ? [address] : undefined,
@@ -55,7 +55,7 @@ export default function TokenBankEIP712() {
 
   // Read token symbol
   const { data: tokenSymbol } = useReadContract({
-    address: CONTRACTS_PERMIT.MyTokenPermit as AddressType,
+    address: CONTRACTS.MyTokenPermit as AddressType,
     abi: TOKEN_PERMIT_ABI,
     functionName: 'symbol',
     args: [],
@@ -118,7 +118,7 @@ export default function TokenBankEIP712() {
       const v = parseInt(sig.slice(128, 130), 16);
 
       permitDeposit({
-        address: CONTRACTS_PERMIT.TokenBankPermit as AddressType,
+        address: CONTRACTS.TokenBankPermit as AddressType,
         abi: TOKEN_BANK_PERMIT_ABI,
         functionName: 'permitDeposit',
         args: [amount, BigInt(deadline), v, r, s],
@@ -129,17 +129,17 @@ export default function TokenBankEIP712() {
   const handleApprove = () => {
     if (!depositAmount) return;
     approve({
-      address: CONTRACTS_PERMIT.MyTokenPermit as AddressType,
+      address: CONTRACTS.MyTokenPermit as AddressType,
       abi: TOKEN_PERMIT_ABI,
       functionName: 'approve',
-      args: [CONTRACTS_PERMIT.TokenBankPermit as AddressType, parseEther(depositAmount)],
+      args: [CONTRACTS.TokenBankPermit as AddressType, parseEther(depositAmount)],
     });
   };
 
   const handleDeposit = () => {
     if (!depositAmount) return;
     deposit({
-      address: CONTRACTS_PERMIT.TokenBankPermit as AddressType,
+      address: CONTRACTS.TokenBankPermit as AddressType,
       abi: TOKEN_BANK_PERMIT_ABI,
       functionName: 'deposit',
       args: [parseEther(depositAmount)],
@@ -164,7 +164,7 @@ export default function TokenBankEIP712() {
       name: 'MyTokenPermit',
       version: '1',
       chainId: chain.id,
-      verifyingContract: CONTRACTS_PERMIT.MyTokenPermit as AddressType,
+      verifyingContract: CONTRACTS.MyTokenPermit as AddressType,
     };
 
     const types = {
@@ -179,7 +179,7 @@ export default function TokenBankEIP712() {
 
     const message = {
       owner: address,
-      spender: CONTRACTS_PERMIT.TokenBankPermit as AddressType,
+      spender: CONTRACTS.TokenBankPermit as AddressType,
       value: amount,
       nonce: nonce || BigInt(0),
       deadline: BigInt(deadline),
@@ -196,7 +196,7 @@ export default function TokenBankEIP712() {
   const handleWithdraw = () => {
     if (!withdrawAmount) return;
     withdraw({
-      address: CONTRACTS_PERMIT.TokenBankPermit as AddressType,
+      address: CONTRACTS.TokenBankPermit as AddressType,
       abi: TOKEN_BANK_PERMIT_ABI,
       functionName: 'withdraw',
       args: [parseEther(withdrawAmount)],
